@@ -1222,7 +1222,7 @@ class TemplateTest extends TestCase
     public function testFilterTruncateCustomEnd(): void
     {
         $result = self::$template->render('{{ text|truncate(10, "..") }}', ['text' => 'Hello World']);
-        $this->assertEquals('Hello Wo..', $result);
+        $this->assertEquals('Hello..', $result);
     }
 
     public function testFilterTruncateNoTruncation(): void

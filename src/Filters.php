@@ -35,7 +35,13 @@ class Filters
                 if (strlen($str) <= $length) {
                     return $str;
                 }
-                return substr($str, 0, $length - strlen($end)) . $end;
+                $truncated = substr($str, 0, $length - strlen($end));
+                // Find the last space to avoid breaking words
+                $lastSpace = strrpos($truncated, ' ');
+                if ($lastSpace !== false) {
+                    $truncated = substr($truncated, 0, $lastSpace);
+                }
+                return $truncated . $end;
             },
             'replace' => function (string $str, string $old, string $new, ?int $count = null) {
                 if ($count === null) {
