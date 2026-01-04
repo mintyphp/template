@@ -2,6 +2,8 @@
 
 Simple yet powerful Jinja-like templating system for HTML written in PHP.
 
+See: https://www.tqdev.com/2026-jinja-templating-engine-html-php/
+
 ## Overview
 
 MintyPHP's Template engine provides a simple yet powerful Jinja-like templating
