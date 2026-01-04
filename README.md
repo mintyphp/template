@@ -811,7 +811,8 @@ Templates are HTML-safe by default with automatic escaping.
             <article class="post">
                 <h2>{{ post.title }}</h2>
                 <div class="meta">
-                    By {{ post.author }} on {{ post.date }} {% if post.views > 1000 %}
+                    By {{ post.author }} on {{ post.date }}
+                    {% if post.views > 1000 %}
                     <span class="popular">🔥 Popular</span>
                     {% endif %}
                 </div>
