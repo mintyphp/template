@@ -1,5 +1,7 @@
 # MintyPHP Template
 
+Simple yet powerful Jinja-like templating system for HTML written in PHP.
+
 ## Overview
 
 MintyPHP's Template engine provides a simple yet powerful Jinja-like templating
