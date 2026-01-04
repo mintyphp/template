@@ -2,7 +2,7 @@
 
 namespace MintyPHP\Template;
 
-use MintyPHP\Error\TemplateError;
+use MintyPHP\Template\TemplateError;
 
 /**
  * Helper utilities for template processing

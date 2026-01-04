@@ -2,7 +2,7 @@
 
 namespace MintyPHP\Template;
 
-use MintyPHP\Error\TemplateError;
+use MintyPHP\Template\TemplateError;
 
 /**
  * Internal class representing an expression with operators

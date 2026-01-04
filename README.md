@@ -1104,65 +1104,65 @@ MintyPHP includes comprehensive builtin filters for common transformations.
 #### `lower`
 Convert to lowercase.
 ```
-{{ "HELLO"|lower }} → hello
+{{ "HELLO"|lower }} = hello
 ```
 
 #### `upper`
 Convert to uppercase.
 ```
-{{ "hello"|upper }} → HELLO
+{{ "hello"|upper }} = HELLO
 ```
 
 #### `capitalize`
 Capitalize first character.
 ```
-{{ "hello world"|capitalize }} → Hello world
+{{ "hello world"|capitalize }} = Hello world
 ```
 
 #### `title`
 Title case (capitalize each word).
 ```
-{{ "hello world"|title }} → Hello World
+{{ "hello world"|title }} = Hello World
 ```
 
 #### `trim`
 Remove leading/trailing whitespace.
 ```
-{{ "  hello  "|trim }} → hello
+{{ "  hello  "|trim }} = hello
 ```
 
 #### `truncate(length, end)`
 Truncate string to length (default 255, default end "...").
 ```
-{{ "Hello World"|truncate(8) }} → Hello...
-{{ "Hello World"|truncate(8, ">>") }} → Hello W>>
+{{ "Hello World"|truncate(8) }} = Hello...
+{{ "Hello World"|truncate(8, ">>") }} = Hello W>>
 ```
 
 #### `replace(old, new, count)`
 Replace substring occurrences.
 ```
-{{ "Hello World"|replace("Hello", "Goodbye") }} → Goodbye World
-{{ "aaaaargh"|replace("a", "d'oh, ", 2) }} → d'oh, d'oh, aaargh
+{{ "Hello World"|replace("Hello", "Goodbye") }} = Goodbye World
+{{ "aaaaargh"|replace("a", "d'oh, ", 2) }} = d'oh, d'oh, aaargh
 ```
 
 #### `split(separator)`
 Split string into array.
 ```
-{{ "1,2,3"|split(",")|join("|") }} → 1|2|3
-{{ "123"|split()|join("|") }} → 1|2|3
+{{ "1,2,3"|split(",")|join("|") }} = 1|2|3
+{{ "123"|split()|join("|") }} = 1|2|3
 ```
 
 #### `urlencode`
 URL-encode a string.
 ```
-{{ "hello world"|urlencode }} → hello+world
+{{ "hello world"|urlencode }} = hello+world
 ```
 
 #### `reverse`
 Reverse string or array.
 ```
-{{ "hello"|reverse }} → olleh
-{{ [1,2,3]|reverse|join(",") }} → 3,2,1
+{{ "hello"|reverse }} = olleh
+{{ [1,2,3]|reverse|join(",") }} = 3,2,1
 ```
 
 ### Numeric Filters
@@ -1170,31 +1170,31 @@ Reverse string or array.
 #### `abs`
 Absolute value.
 ```
-{{ -42|abs }} → 42
+{{ -42|abs }} = 42
 ```
 
 #### `round(precision, method)`
 Round number (default precision=0, method="common").
 Available methods: common, ceil, floor, down, even/banker, odd, awayzero, tozero.
 ```
-{{ 42.55|round }} → 43
-{{ 42.55|round(1, "floor") }} → 42.5
-{{ 2.5|round(0, "even") }} → 2
+{{ 42.55|round }} = 43
+{{ 42.55|round(1, "floor") }} = 42.5
+{{ 2.5|round(0, "even") }} = 2
 ```
 
 #### `sprintf(format)`
 Format with sprintf.
 ```
-{{ 3.14159|sprintf("%.2f") }} → 3.14
-{{ 42|sprintf("%05d") }} → 00042
+{{ 3.14159|sprintf("%.2f") }} = 3.14
+{{ 42|sprintf("%05d") }} = 00042
 ```
 
 #### `filesizeformat(binary)`
 Format bytes as human-readable size.
 ```
-{{ 13000|filesizeformat }} → 13.0 kB
-{{ 1024|filesizeformat(true) }} → 1.0 KiB
-{{ 1500000|filesizeformat }} → 1.5 MB
+{{ 13000|filesizeformat }} = 13.0 kB
+{{ 1024|filesizeformat(true) }} = 1.0 KiB
+{{ 1500000|filesizeformat }} = 1.5 MB
 ```
 
 ### Array/Collection Filters
@@ -1202,36 +1202,36 @@ Format bytes as human-readable size.
 #### `length` / `count`
 Get count of items or string length.
 ```
-{{ [1,2,3]|length }} → 3
-{{ "hello"|length }} → 5
+{{ [1,2,3]|length }} = 3
+{{ "hello"|length }} = 5
 ```
 
 #### `first(n)`
 Get first item or first n items.
 ```
-{{ [1,2,3,4]|first }} → 1
-{{ [1,2,3,4]|first(2) }} → [1,2]
+{{ [1,2,3,4]|first }} = 1
+{{ [1,2,3,4]|first(2) }} = [1,2]
 ```
 
 #### `last(n)`
 Get last item or last n items.
 ```
-{{ [1,2,3,4]|last }} → 4
-{{ [1,2,3,4]|last(2) }} → [3,4]
+{{ [1,2,3,4]|last }} = 4
+{{ [1,2,3,4]|last(2) }} = [3,4]
 ```
 
 #### `join(separator, attribute)`
 Join array elements with separator.
 ```
-{{ [1,2,3]|join("|") }} → 1|2|3
-{{ users|join(", ", "username") }} → alice, bob, charlie
+{{ [1,2,3]|join("|") }} = 1|2|3
+{{ users|join(", ", "username") }} = alice, bob, charlie
 ```
 
 #### `sum(attribute)`
 Sum numeric values in array.
 ```
-{{ [1,2,3]|sum }} → 6
-{{ items|sum("price") }} → 150.50
+{{ [1,2,3]|sum }} = 6
+{{ items|sum("price") }} = 150.50
 ```
 
 ### Utility Filters
@@ -1239,27 +1239,27 @@ Sum numeric values in array.
 #### `default(value, boolean)`
 Return default if value is null (or falsy with boolean=true).
 ```
-{{ missing_var|default("N/A") }} → N/A
-{{ ""|default("empty", true) }} → empty
-{{ 0|default("zero", true) }} → zero
+{{ missing_var|default("N/A") }} = N/A
+{{ ""|default("empty", true) }} = empty
+{{ 0|default("zero", true) }} = zero
 ```
 
 #### `attr(name)`
 Get attribute by name.
 ```
-{{ user|attr("email") }} → user@example.com
+{{ user|attr("email") }} = user@example.com
 ```
 
 #### `debug` / `d`
 Pretty-print value as JSON for debugging.
 ```
-{{ user|debug }} → <pre>{"name":"Alice","email":"alice@example.com"}</pre>
+{{ user|debug }} = <pre>{"name":"Alice","email":"alice@example.com"}</pre>
 ```
 
 #### `raw`
 Output unescaped HTML (builtin).
 ```
-{{ "<strong>Bold</strong>"|raw }} → <strong>Bold</strong>
+{{ "<strong>Bold</strong>"|raw }} = <strong>Bold</strong>
 ```
 
 ---
