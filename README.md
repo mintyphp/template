@@ -1132,10 +1132,10 @@ Remove leading/trailing whitespace.
 ```
 
 #### `truncate(length, end)`
-Truncate string to length (default 255, default end "...").
+Truncate string to length (default 255, default end "...") without breaking words.
 ```
 {{ "Hello World"|truncate(8) }} = Hello...
-{{ "Hello World"|truncate(8, ">>") }} = Hello W>>
+{{ "Hello World"|truncate(10, "..") }} = Hello..
 ```
 
 #### `replace(old, new, count)`
