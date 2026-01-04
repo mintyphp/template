@@ -606,9 +606,11 @@ Templates are HTML-safe by default with automatic escaping.
 <div class="access">
     {% if user.age >= 18 && user.is_premium %}
     <p>✓ Full access granted</p>
-    {% endif %} {% if user.credits > 100 || user.is_premium %}
+    {% endif %}
+    {% if user.credits > 100 || user.is_premium %}
     <p>✓ Can download premium content</p>
-    {% endif %}{% if (user.age >= 21 && user.credits > 50) || user.is_premium %}
+    {% endif %}
+    {% if (user.age >= 21 && user.credits > 50) || user.is_premium %}
     <p>✓ Can access exclusive features</p>
     {% endif %}
 </div>
