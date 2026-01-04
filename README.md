@@ -2,7 +2,7 @@
 
 ## Overview
 
-MintyPHP's Template engine provides a Jinja-like simple yet powerful templating
+MintyPHP's Template engine provides a simple yet powerful Jinja-like templating
 system with variable interpolation, control structures, filters, and expression
 evaluation. Templates are HTML-safe by default with automatic escaping.
 
