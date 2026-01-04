@@ -19,7 +19,7 @@
     "autoload": {
         "psr-4": {
             "MintyPHP\\Template\\": "src/",
-            "MintyPHP\\Template\\Tests": "tests/"
+            "MintyPHP\\Template\\Tests\\": "tests/"
         }
     }
 }

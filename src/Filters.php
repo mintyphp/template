@@ -1,6 +1,6 @@
 <?php
 
-namespace MintyPHP\Core\Template;
+namespace MintyPHP\Template;
 
 /**
  * Built-in filter functions for the template engine

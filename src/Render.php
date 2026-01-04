@@ -1,6 +1,6 @@
 <?php
 
-namespace MintyPHP\Core\Template;
+namespace MintyPHP\Template;
 
 /**
  * Core rendering logic for template nodes

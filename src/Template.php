@@ -1,12 +1,12 @@
 <?php
 
-namespace MintyPHP\Core;
+namespace MintyPHP\Template;
 
-use MintyPHP\Core\Template\RawValue;
-use MintyPHP\Core\Template\TreeNode;
-use MintyPHP\Core\Template\Filters;
-use MintyPHP\Core\Template\Render;
-use MintyPHP\Core\Template\Blocks;
+use MintyPHP\Template\RawValue;
+use MintyPHP\Template\TreeNode;
+use MintyPHP\Template\Filters;
+use MintyPHP\Template\Render;
+use MintyPHP\Template\Blocks;
 
 /**
  * Template engine for MintyPHP

@@ -1,6 +1,6 @@
 <?php
 
-namespace MintyPHP\Core\Template;
+namespace MintyPHP\Template;
 
 /**
  * Internal class representing a node in the template syntax tree

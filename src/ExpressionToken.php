@@ -1,6 +1,6 @@
 <?php
 
-namespace MintyPHP\Core\Template;
+namespace MintyPHP\Template;
 
 /**
  * Internal class representing a token in an expression
