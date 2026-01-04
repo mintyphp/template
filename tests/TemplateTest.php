@@ -1231,6 +1231,24 @@ class TemplateTest extends TestCase
         $this->assertEquals('Hello', $result);
     }
 
+    public function testFilterTruncateLongWord(): void
+    {
+        $result = self::$template->render('{{ text|truncate(10) }}', ['text' => 'Supercalifragilistic']);
+        $this->assertEquals('Superca...', $result);
+    }
+
+    public function testFilterTruncateMultipleWords(): void
+    {
+        $result = self::$template->render('{{ text|truncate(20) }}', ['text' => 'The quick brown fox jumps']);
+        $this->assertEquals('The quick brown...', $result);
+    }
+
+    public function testFilterTruncateWithTrailingSpace(): void
+    {
+        $result = self::$template->render('{{ text|truncate(15) }}', ['text' => 'Hello world and more']);
+        $this->assertEquals('Hello world...', $result);
+    }
+
     public function testFilterReplace(): void
     {
         $result = self::$template->render('{{ text|replace("Hello", "Goodbye") }}', ['text' => 'Hello World']);
