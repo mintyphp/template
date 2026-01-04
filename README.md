@@ -1,4 +1,4 @@
-# Template Engine Documentation
+# MintyPHP Template
 
 ## Overview
 
