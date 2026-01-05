@@ -222,4 +222,39 @@ class RenderingTest extends TestCase
         $template = "{% if a\n>\n10 %}first{% elseif a\n>\n5 %}second{% else %}third{% endif %}";
         $this->assertEquals("second", self::$template->render($template, ['a' => 7]));
     }
+
+    public function testComplexUTF8Emoticon(): void
+    {
+        // Test with various complex UTF-8 emoticons and multi-byte characters
+
+        // Family emoji (man, woman, girl, boy) - uses zero-width joiners
+        $emoticon = "👨‍👩‍👧‍👦";
+        $result = self::$template->render("{{ emoji }}", ['emoji' => $emoticon]);
+        $this->assertEquals($emoticon, $result);
+
+        // Test concatenation with emoticons
+        $result = self::$template->render('{{ greeting + " " + emoji }}', ['greeting' => 'Hello', 'emoji' => '🎉🎊']);
+        $this->assertEquals("Hello 🎉🎊", $result);
+
+        // Test emoticons in conditionals (using variable comparison)
+        $result = self::$template->render('{% if mood == "😊" %}happy{% else %}other{% endif %}', ['mood' => '😊']);
+        $this->assertEquals("happy", $result);
+
+        // Test emoticons in loops
+        $emojis = ['🐱', '🐭'];
+        $result = self::$template->render('🐶{% for animal in animals %}{{ animal }}{% endfor %}', ['animals' => $emojis]);
+        $this->assertEquals("🐶🐱🐭", $result);
+
+        // Test with skin tone modifiers
+        $result = self::$template->render("{{ wave }}", ['wave' => '👋🏽']);
+        $this->assertEquals("👋🏽", $result);
+
+        // Test with flag emoticons (regional indicators)
+        $result = self::$template->render("{{ flag }}", ['flag' => '🇺🇸']);
+        $this->assertEquals("🇺🇸", $result);
+
+        // Test mixed ASCII and emoticons
+        $result = self::$template->render("{{ message }} 🌍", ['message' => 'Hello 世界!']);
+        $this->assertEquals("Hello 世界! 🌍", $result);
+    }
 }
