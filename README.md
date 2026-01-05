@@ -273,7 +273,9 @@ echo $template->render('<p>{{hi}}</p>',['hi' => 'Hello world']);
 
     {% if user.is_admin %}
     <span class="badge">Administrator</span>
-    {% endif %} {% if user.age >= 18 %}
+    {% endif %}
+
+    {% if user.age >= 18 %}
     <p>Adult user ({{ user.age }} years old)</p>
     {% else %}
     <p>Minor user ({{ user.age }} years old)</p>
@@ -288,7 +290,7 @@ echo $template->render('<p>{{hi}}</p>',['hi' => 'Hello world']);
     <h2>Bob</h2>
 
     <span class="badge">Administrator</span>
-
+    
     <p>Adult user (25 years old)</p>
 </div>
 ```
@@ -515,8 +517,8 @@ echo $template->render('<p>{{hi}}</p>',['hi' => 'Hello world']);
     <ul>
         {% for employee in company.employees %}
         <li>
-            <strong>{{ employee.name }}</strong> - {{ employee.position }} (${{
-            employee.salary }})
+            <strong>{{ employee.name }}</strong> - {{ 
+                employee.position }} (${{ employee.salary }})
         </li>
         {% endfor %}
     </ul>
