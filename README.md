@@ -1391,28 +1391,56 @@ Use `is not` to negate tests:
 
 ## Custom Filters
 
-Custom filters can be provided as functions when rendering templates. The `raw`
+Custom filters can be provided to the Template constructor. The `raw`
 filter is built-in.
 
 **PHP Usage Example:**
 
 ```php
-$template = new Template();
-
-$data = ['name' => 'john doe', 'date' => 'May 13, 1980'];
-
 $filters = [
     'upper' => 'strtoupper',
     'capitalize' => 'ucfirst',
     'dateFormat' => fn($date, $format) => date($format, strtotime($date))
 ];
 
+$template = new Template(null, $filters);
+
+$data = ['name' => 'john doe', 'date' => 'May 13, 1980'];
+
 $html = $template->render(
     'Hello {{ name|upper }}, date: {{ date|dateFormat("Y-m-d") }}',
-    $data,
-    $filters
+    $data
 );
 // Output: Hello JOHN DOE, date: 1980-05-13
+```
+
+---
+
+## Custom Tests
+
+Custom tests can be provided as the third argument to the Template constructor.
+Built-in tests include: `defined`, `undefined`, `null`, `even`, `odd`, `number`, 
+`string`, `iterable`, and `divisibleby(n)`.
+
+**PHP Usage Example:**
+
+```php
+$filters = [];
+$tests = [
+    'positive' => fn($value) => is_numeric($value) && $value > 0,
+    'negative' => fn($value) => is_numeric($value) && $value < 0,
+    'adult' => fn($age) => is_numeric($age) && $age >= 18
+];
+
+$template = new Template(null, $filters, $tests);
+
+$data = ['score' => 85, 'age' => 21];
+
+$html = $template->render(
+    '{% if score is positive %}Pass{% endif %} {% if age is adult %}Adult{% endif %}',
+    $data
+);
+// Output: Pass Adult
 ```
 
 ---

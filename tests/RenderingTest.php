@@ -16,7 +16,8 @@ class RenderingTest extends TestCase
 
     public function testRenderWithCustomFunction(): void
     {
-        $result = self::$template->render('hello {{ name|capitalize }}', ['name' => 'world'], ['capitalize' => 'ucfirst']);
+        $template = new Template(null, ['capitalize' => 'ucfirst']);
+        $result = $template->render('hello {{ name|capitalize }}', ['name' => 'world']);
         $this->assertEquals("hello World", $result);
     }
 
@@ -27,49 +28,55 @@ class RenderingTest extends TestCase
 
     public function testRenderWithMissingFunction(): void
     {
-        $this->assertEquals("hello {{name|failure!!filter `failure` not found}}", self::$template->render('hello {{ name|failure }}', ['name' => 'world'], ['capitalize' => 'ucfirst']));
+        $template = new Template(null, ['capitalize' => 'ucfirst']);
+        $this->assertEquals("hello {{name|failure!!filter `failure` not found}}", $template->render('hello {{ name|failure }}', ['name' => 'world']));
     }
 
     public function testRenderWithFunctionLiteralArgument(): void
     {
-        $this->assertEquals("hello 1980-05-13", self::$template->render('hello {{ name|dateFormat("Y-m-d") }}', ['name' => 'May 13, 1980'], ['dateFormat' => fn(string $date, string $format) => date($format, strtotime($date) ?: null)]));
+        $template = new Template(null, ['dateFormat' => fn(string $date, string $format) => date($format, strtotime($date) ?: null)]);
+        $this->assertEquals("hello 1980-05-13", $template->render('hello {{ name|dateFormat("Y-m-d") }}', ['name' => 'May 13, 1980']));
     }
 
     public function testRenderWithFunctionDataArgument(): void
     {
-        $this->assertEquals("hello 1980-05-13", self::$template->render('hello {{ name|dateFormat(format) }}', ['name' => 'May 13, 1980', 'format' => 'Y-m-d'], ['dateFormat' => fn(string $date, string $format) => date($format, strtotime($date) ?: null)]));
+        $template = new Template(null, ['dateFormat' => fn(string $date, string $format) => date($format, strtotime($date) ?: null)]);
+        $this->assertEquals("hello 1980-05-13", $template->render('hello {{ name|dateFormat(format) }}', ['name' => 'May 13, 1980', 'format' => 'Y-m-d']));
     }
 
     public function testRenderWithFunctionComplexLiteralArgument(): void
     {
-        $this->assertEquals("hello May 13, 1980", self::$template->render('hello {{ name|dateFormat("M j, Y") }}', ['name' => 'May 13, 1980'], ['dateFormat' => fn(string $date, string $format) => date($format, strtotime($date) ?: null)]));
+        $template = new Template(null, ['dateFormat' => fn(string $date, string $format) => date($format, strtotime($date) ?: null)]);
+        $this->assertEquals("hello May 13, 1980", $template->render('hello {{ name|dateFormat("M j, Y") }}', ['name' => 'May 13, 1980']));
     }
 
     public function testRenderWithFunctionArgumentWithWhitespace(): void
     {
-        $this->assertEquals("hello May 13, 1980", self::$template->render('hello {{ name|dateFormat( "M j, Y") }}', ['name' => 'May 13, 1980'], ['dateFormat' => fn(string $date, string $format) => date($format, strtotime($date) ?: null)]));
+        $template = new Template(null, ['dateFormat' => fn(string $date, string $format) => date($format, strtotime($date) ?: null)]);
+        $this->assertEquals("hello May 13, 1980", $template->render('hello {{ name|dateFormat( "M j, Y") }}', ['name' => 'May 13, 1980']));
     }
 
     public function testRenderWithEscapedSpecialCharacters(): void
     {
-        $this->assertEquals("hello \" May ()}}&quot;,|:.13, 1980\"", self::$template->render('hello "{{ name|dateFormat(" M ()}}\\",|:.j, Y") }}"', ['name' => 'May 13, 1980'], ['dateFormat' => fn(string $date, string $format) => date($format, strtotime($date) ?: null)]));
+        $template = new Template(null, ['dateFormat' => fn(string $date, string $format) => date($format, strtotime($date) ?: null)]);
+        $this->assertEquals("hello \" May ()}}&quot;,|:.13, 1980\"", $template->render('hello "{{ name|dateFormat(" M ()}}\\",|:.j, Y") }}"', ['name' => 'May 13, 1980']));
     }
 
     public function testEscape(): void
     {
-        $this->assertEquals('&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;', self::$template->render('{{ a }}', ['a' => '<script>alert("xss")</script>'], []));
+        $this->assertEquals('&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;', self::$template->render('{{ a }}', ['a' => '<script>alert("xss")</script>']));
     }
 
     public function testRawEscape(): void
     {
-        $this->assertEquals('<script>alert("xss")</script>', self::$template->render('{{ a|raw }}', ['a' => '<script>alert("xss")</script>'], []));
+        $this->assertEquals('<script>alert("xss")</script>', self::$template->render('{{ a|raw }}', ['a' => '<script>alert("xss")</script>']));
     }
 
     public function testNoEscape(): void
     {
         // Since HTML escaping is now always enabled, use raw filter to bypass escaping
         $template = new Template();
-        $this->assertEquals('<script>alert("xss")</script>', $template->render('{{ a|raw }}', ['a' => '<script>alert("xss")</script>'], []));
+        $this->assertEquals('<script>alert("xss")</script>', $template->render('{{ a|raw }}', ['a' => '<script>alert("xss")</script>']));
     }
 
     // Comment syntax tests - {# ... #}
@@ -186,14 +193,16 @@ class RenderingTest extends TestCase
 
     public function testExpressionWithNewlineBeforeFilter(): void
     {
-        $template = "{{ name\n|capitalize }}";
-        $this->assertEquals("World", self::$template->render($template, ['name' => 'world'], ['capitalize' => 'ucfirst']));
+        $template = new Template(null, ['capitalize' => 'ucfirst']);
+        $result = $template->render("{{ name\n|capitalize }}", ['name' => 'world']);
+        $this->assertEquals("World", $result);
     }
 
     public function testExpressionWithNewlineInFilterArguments(): void
     {
-        $template = "{{ name\n|dateFormat(\n\"Y-m-d\"\n) }}";
-        $this->assertEquals("1980-05-13", self::$template->render($template, ['name' => 'May 13, 1980'], ['dateFormat' => fn(string $date, string $format) => date($format, strtotime($date) ?: null)]));
+        $template = new Template(null, ['dateFormat' => fn(string $date, string $format) => date($format, strtotime($date) ?: null)]);
+        $result = $template->render("{{ name\n|dateFormat(\n\"Y-m-d\"\n) }}", ['name' => 'May 13, 1980']);
+        $this->assertEquals("1980-05-13", $result);
     }
 
     public function testExpressionWithCarriageReturnNewline(): void

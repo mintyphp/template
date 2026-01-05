@@ -183,12 +183,13 @@ class Expression
      * 
      * @param array<string,mixed> $data
      * @param callable $resolvePath
+     * @param array<string,callable> $tests Custom test functions
      * @return mixed
      */
-    public function evaluate(array $data, callable $resolvePath): mixed
+    public function evaluate(array $data, callable $resolvePath, array $tests = []): mixed
     {
         $rpn = $this->toReversePolishNotation();
-        return $this->evaluateRPN($rpn, $data, $resolvePath);
+        return $this->evaluateRPN($rpn, $data, $resolvePath, $tests);
     }
 
     /**
@@ -261,9 +262,10 @@ class Expression
      * @param array<int,ExpressionToken> $rpn
      * @param array<string,mixed> $data
      * @param callable $resolvePath
+     * @param array<string,callable> $tests
      * @return mixed
      */
-    private function evaluateRPN(array $rpn, array $data, callable $resolvePath): mixed
+    private function evaluateRPN(array $rpn, array $data, callable $resolvePath, array $tests): mixed
     {
         $stack = [];
 
@@ -363,7 +365,7 @@ class Expression
                         if (is_array($right) && isset($right['__test_identifier'])) {
                             $testName = $right['__test_identifier'];
                         }
-                        $result = $this->applyTest($left, $testName, $data, $resolvePath);
+                        $result = $this->applyTest($left, $testName, $data, $resolvePath, $tests);
                         $stack[] = $result;
                         continue;
                     }
@@ -414,9 +416,10 @@ class Expression
      * @param array<string,string>|float|int|string $testSpec The test specification (identifier like "even", "not.defined", or "divisibleby(3)")
      * @param array<string,mixed> $data Data context
      * @param callable $resolvePath Path resolver function
+     * @param array<string,callable> $tests Custom test functions
      * @return bool The test result
      */
-    private function applyTest(mixed $value, array|float|int|string $testSpec, array $data, callable $resolvePath): bool
+    private function applyTest(mixed $value, array|float|int|string $testSpec, array $data, callable $resolvePath, array $tests): bool
     {
         $isNegated = false;
         $testName = '';
@@ -450,6 +453,12 @@ class Expression
             } else {
                 $result = false;
             }
+            return $isNegated ? !$result : $result;
+        }
+
+        // Check custom tests first
+        if (isset($tests[$testName])) {
+            $result = $tests[$testName]($value);
             return $isNegated ? !$result : $result;
         }
 

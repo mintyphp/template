@@ -20,13 +20,23 @@ class Template
     /** @var callable|null */
     private $templateLoader = null;
 
+    /** @var array<string,callable> */
+    private array $filters = [];
+
+    /** @var array<string,callable> */
+    private array $tests = [];
+
     /**
      * Constructor
      * @param callable|null $templateLoader Function to load templates by name for extends/include
+     * @param array<string,callable> $filters Associative array of custom filters
+     * @param array<string,callable> $tests Associative array of custom tests
      */
-    public function __construct(?callable $templateLoader = null)
+    public function __construct(?callable $templateLoader = null, array $filters = [], array $tests = [])
     {
         $this->templateLoader = $templateLoader;
+        $this->filters = $filters;
+        $this->tests = $tests;
     }
 
     /**
@@ -44,21 +54,20 @@ class Template
     }
 
     /**
-     * Renders a template string with the provided data and custom filters.
+     * Renders a template string with the provided data.
      *
      * @param string $template The template string containing placeholders like {{variable}}.
      * @param array<string,mixed> $data Associative array of data to use in the template.
-     * @param array<string,callable> $filters Associative array of custom filters available in the template.
      * @return string The rendered template string.
      * @throws \RuntimeException If there is an error during rendering.
      */
-    public function render(string $template, array $data, array $filters = []): string
+    public function render(string $template, array $data): string
     {
         $tokens = $this->tokenize($template);
         $tree = $this->createSyntaxTree($tokens);
-        // Add built-in filters
-        $filters = array_merge(Filters::getBuiltinFilters(), $filters);
-        return $this->renderChildren($tree, $data, $filters);
+        // Merge built-in and custom filters
+        $filters = array_merge(Filters::getBuiltinFilters(), $this->filters);
+        return $this->renderChildren($tree, $data, $filters, $this->tests);
     }
 
     /**
@@ -311,9 +320,10 @@ class Template
      * @param TreeNode $node The parent node whose children should be rendered.
      * @param array<string,mixed> $data The data context for rendering.
      * @param array<string,callable> $filters Available custom filters.
+     * @param array<string,callable> $tests Available custom tests.
      * @return string The concatenated rendered output of all child nodes.
      */
-    private function renderChildren(TreeNode $node, array $data, array $filters): string
+    private function renderChildren(TreeNode $node, array $data, array $filters, array $tests): string
     {
         $result = '';
         $ifNodes = [];
@@ -350,6 +360,7 @@ class Template
                 $blocks,
                 $data,
                 $filters,
+                $tests,
                 $this->tokenize(...),
                 $this->createSyntaxTree(...),
                 $this->renderChildrenWithBlocks(...),
@@ -366,6 +377,7 @@ class Template
                         $child,
                         $data,
                         $filters,
+                        $tests,
                         $this->renderChildren(...),
                         $this->escape(...)
                     );
@@ -377,6 +389,7 @@ class Template
                         $ifNodes,
                         $data,
                         $filters,
+                        $tests,
                         $this->renderChildren(...),
                         $this->escape(...)
                     );
@@ -388,6 +401,7 @@ class Template
                         $ifNodes,
                         $data,
                         $filters,
+                        $tests,
                         $this->renderChildren(...),
                         $this->escape(...)
                     );
@@ -398,6 +412,7 @@ class Template
                         $child,
                         $data,
                         $filters,
+                        $tests,
                         $this->renderChildren(...),
                         $this->escape(...)
                     );
@@ -408,6 +423,7 @@ class Template
                         [],
                         $data,
                         $filters,
+                        $tests,
                         $this->renderChildren(...),
                         $this->renderChildrenWithBlocks(...),
                         $this->escape(...)
@@ -418,6 +434,7 @@ class Template
                         $child,
                         $data,
                         $filters,
+                        $tests,
                         $this->tokenize(...),
                         $this->createSyntaxTree(...),
                         $this->renderChildren(...),
@@ -430,6 +447,7 @@ class Template
                         $child,
                         $data,
                         $filters,
+                        $tests,
                         $this->escape(...)
                     );
                     break;
@@ -450,9 +468,10 @@ class Template
      * @param array<string,TreeNode> $blockOverrides Override blocks from child template.
      * @param array<string,mixed> $data The data context for rendering.
      * @param array<string,callable> $filters Available custom filters.
+     * @param array<string,callable> $tests Available custom tests.
      * @return string The concatenated rendered output of all child nodes.
      */
-    private function renderChildrenWithBlocks(TreeNode $node, array $blockOverrides, array $data, array $filters): string
+    private function renderChildrenWithBlocks(TreeNode $node, array $blockOverrides, array $data, array $filters, array $tests): string
     {
         $result = '';
         $ifNodes = [];
@@ -463,6 +482,7 @@ class Template
                         $child,
                         $data,
                         $filters,
+                        $tests,
                         $this->renderChildren(...),
                         $this->escape(...)
                     );
@@ -474,6 +494,7 @@ class Template
                         $ifNodes,
                         $data,
                         $filters,
+                        $tests,
                         $this->renderChildren(...),
                         $this->escape(...)
                     );
@@ -485,6 +506,7 @@ class Template
                         $ifNodes,
                         $data,
                         $filters,
+                        $tests,
                         $this->renderChildren(...),
                         $this->escape(...)
                     );
@@ -495,6 +517,7 @@ class Template
                         $child,
                         $data,
                         $filters,
+                        $tests,
                         $this->renderChildren(...),
                         $this->escape(...)
                     );
@@ -505,6 +528,7 @@ class Template
                         $blockOverrides,
                         $data,
                         $filters,
+                        $tests,
                         $this->renderChildren(...),
                         $this->renderChildrenWithBlocks(...),
                         $this->escape(...)
@@ -515,6 +539,7 @@ class Template
                         $child,
                         $data,
                         $filters,
+                        $tests,
                         $this->tokenize(...),
                         $this->createSyntaxTree(...),
                         $this->renderChildren(...),
@@ -527,6 +552,7 @@ class Template
                         $child,
                         $data,
                         $filters,
+                        $tests,
                         $this->escape(...)
                     );
                     break;

@@ -16,9 +16,10 @@ class Blocks
      * @param array<string,TreeNode> $blocks Blocks defined in the child template.
      * @param array<string,mixed> $data The data context for rendering.
      * @param array<string,callable> $filters Available custom filters.
+     * @param array<string,callable> $tests Available custom tests.
      * @param callable(string): array<int,string> $tokenize Function to tokenize templates.
      * @param callable(array<int,string>): TreeNode $createSyntaxTree Function to create syntax trees.
-     * @param callable(TreeNode, array<string,TreeNode>, array<string,mixed>, array<string,callable>): string $renderChildrenWithBlocks Function to render with blocks.
+     * @param callable(TreeNode, array<string,TreeNode>, array<string,mixed>, array<string,callable>, array<string,callable>): string $renderChildrenWithBlocks Function to render with blocks.
      * @param callable(string|RawValue): string $escape Function to escape values.
      * @param (callable(string): (string|null))|null $templateLoader Template loader function.
      * @return string The rendered parent template with block overrides.
@@ -28,6 +29,7 @@ class Blocks
         array $blocks,
         array $data,
         array $filters,
+        array $tests,
         callable $tokenize,
         callable $createSyntaxTree,
         callable $renderChildrenWithBlocks,
@@ -61,7 +63,7 @@ class Blocks
             $tree = $createSyntaxTree($tokens);
 
             // Render parent with block overrides
-            return $renderChildrenWithBlocks($tree, $blocks, $data, $filters);
+            return $renderChildrenWithBlocks($tree, $blocks, $data, $filters, $tests);
         } catch (\Throwable $e) {
             return $escape('{% extends "' . $templateName . '" !!' . $e->getMessage() . ' %}');
         }
@@ -77,8 +79,9 @@ class Blocks
      * @param array<string,TreeNode> $blockOverrides Override blocks from child template.
      * @param array<string,mixed> $data The data context for rendering.
      * @param array<string,callable> $filters Available custom filters.
-     * @param callable(TreeNode, array<string,mixed>, array<string,callable>): string $renderChildren Function to render children nodes.
-     * @param callable(TreeNode, array<string,TreeNode>, array<string,mixed>, array<string,callable>): string $renderChildrenWithBlocks Function to render with blocks.
+     * @param array<string,callable> $tests Available custom tests.
+     * @param callable(TreeNode, array<string,mixed>, array<string,callable>, array<string,callable>): string $renderChildren Function to render children nodes.
+     * @param callable(TreeNode, array<string,TreeNode>, array<string,mixed>, array<string,callable>, array<string,callable>): string $renderChildrenWithBlocks Function to render with blocks.
      * @param callable(string|RawValue): string $escape Function to escape values.
      * @return string The rendered block content.
      */
@@ -87,6 +90,7 @@ class Blocks
         array $blockOverrides,
         array $data,
         array $filters,
+        array $tests,
         callable $renderChildren,
         callable $renderChildrenWithBlocks,
         callable $escape
@@ -99,11 +103,11 @@ class Blocks
 
         // If we have an override for this block, use it
         if (isset($blockOverrides[$blockName])) {
-            return $renderChildren($blockOverrides[$blockName], $data, $filters);
+            return $renderChildren($blockOverrides[$blockName], $data, $filters, $tests);
         }
 
         // Otherwise render the default content, but pass blockOverrides for nested blocks
-        return $renderChildrenWithBlocks($node, $blockOverrides, $data, $filters);
+        return $renderChildrenWithBlocks($node, $blockOverrides, $data, $filters, $tests);
     }
 
     /**
@@ -114,9 +118,10 @@ class Blocks
      * @param TreeNode $node The include node to render.
      * @param array<string,mixed> $data The data context for rendering.
      * @param array<string,callable> $filters Available custom filters.
+     * @param array<string,callable> $tests Available custom tests.
      * @param callable(string): array<int,string> $tokenize Function to tokenize templates.
      * @param callable(array<int,string>): TreeNode $createSyntaxTree Function to create syntax trees.
-     * @param callable(TreeNode, array<string,mixed>, array<string,callable>): string $renderChildren Function to render children nodes.
+     * @param callable(TreeNode, array<string,mixed>, array<string,callable>, array<string,callable>): string $renderChildren Function to render children nodes.
      * @param callable(string|RawValue): string $escape Function to escape values.
      * @param (callable(string): (string|null))|null $templateLoader Template loader function.
      * @return string The rendered included template.
@@ -125,6 +130,7 @@ class Blocks
         TreeNode $node,
         array $data,
         array $filters,
+        array $tests,
         callable $tokenize,
         callable $createSyntaxTree,
         callable $renderChildren,
@@ -157,7 +163,7 @@ class Blocks
             $tokens = $tokenize($includedTemplate);
             $tree = $createSyntaxTree($tokens);
 
-            return $renderChildren($tree, $data, $filters);
+            return $renderChildren($tree, $data, $filters, $tests);
         } catch (\Throwable $e) {
             return $escape('{% include "' . $templateName . '" !!' . $e->getMessage() . ' %}');
         }

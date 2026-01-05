@@ -16,7 +16,8 @@ class ControlStructuresTest extends TestCase
 
     public function testRenderIfWithNestedPath(): void
     {
-        $this->assertEquals("hello m is 3", self::$template->render('hello {% if n.m|eq(3) %}m is 3{% endif %}', ['n' => ['m' => 3]], ['eq' => fn($a, $b) => $a == $b]));
+        $template = new Template(null, ['eq' => fn($a, $b) => $a == $b]);
+        $this->assertEquals("hello m is 3", $template->render('hello {% if n.m|eq(3) %}m is 3{% endif %}', ['n' => ['m' => 3]]));
     }
 
     public function testRenderIfElse(): void
@@ -41,7 +42,8 @@ class ControlStructuresTest extends TestCase
 
     public function testRenderForLoopWithIfElseIf(): void
     {
-        $this->assertEquals("hello one two three", self::$template->render('hello{% for i in counts %} {% if i|eq(1) %}one{% elseif i|eq(2) %}two{% else %}three{% endif %}{% endfor %}', ['counts' => [1, 2, 3]], ['eq' => fn($a, $b) => $a == $b]));
+        $template = new Template(null, ['eq' => fn($a, $b) => $a == $b]);
+        $this->assertEquals("hello one two three", $template->render('hello{% for i in counts %} {% if i|eq(1) %}one{% elseif i|eq(2) %}two{% else %}three{% endif %}{% endfor %}', ['counts' => [1, 2, 3]]));
     }
 
     // Multiline template tests inspired by Jinja
