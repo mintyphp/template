@@ -10,6 +10,18 @@ MintyPHP's Template engine provides a simple yet powerful Jinja-like templating
 system with variable interpolation, control structures, filters, and expression
 evaluation. Templates are HTML-safe by default with automatic escaping.
 
+## Requirements
+
+- PHP 8+
+
+## Installation
+
+Add a dependency with Composer:
+
+```bash
+composer require mintyphp/template
+```
+
 ## BNF Syntax
 
 ```bnf
