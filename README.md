@@ -1397,6 +1397,8 @@ filter is built-in.
 **PHP Usage Example:**
 
 ```php
+$data = ['name' => 'john doe', 'date' => 'May 13, 1980'];
+
 $filters = [
     'upper' => 'strtoupper',
     'capitalize' => 'ucfirst',
@@ -1404,9 +1406,6 @@ $filters = [
 ];
 
 $template = new Template(null, $filters);
-
-$data = ['name' => 'john doe', 'date' => 'May 13, 1980'];
-
 $html = $template->render(
     'Hello {{ name|upper }}, date: {{ date|dateFormat("Y-m-d") }}',
     $data
