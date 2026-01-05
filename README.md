@@ -28,8 +28,8 @@ composer require mintyphp/template
 use MintyPHP\Template\Template;
 
 $template = new Template();
-echo $template->render('<p>{{hi}}</p>',['hi' => 'Hello world!']);
-// Outputs: <p>Hello world!</p>
+echo $template->render('<p>{{hi}}</p>',['hi' => 'Hello world']);
+// Outputs: <p>Hello world</p>
 ```
 
 ## BNF Syntax
