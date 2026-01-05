@@ -177,4 +177,44 @@ class TestFunctionsTest extends TestCase
         $result = self::$template->render($tmpl, ['value' => 4]);
         $this->assertEquals("yes", $result);
     }
+
+    public function testCustomTests(): void
+    {
+        $customTests = [
+            'positive' => fn($value) => is_numeric($value) && $value > 0,
+            'negative' => fn($value) => is_numeric($value) && $value < 0,
+            'adult' => fn($value) => is_int($value) && $value >= 18,
+        ];
+
+        $template = new Template(null, [], $customTests);
+
+        // Test positive
+        $tmpl = "{% if value is positive %}yes{% else %}no{% endif %}";
+        $result = $template->render($tmpl, ['value' => 5]);
+        $this->assertEquals("yes", $result);
+
+        $result = $template->render($tmpl, ['value' => -5]);
+        $this->assertEquals("no", $result);
+
+        // Test negative
+        $tmpl = "{% if value is negative %}yes{% else %}no{% endif %}";
+        $result = $template->render($tmpl, ['value' => -3]);
+        $this->assertEquals("yes", $result);
+
+        $result = $template->render($tmpl, ['value' => 3]);
+        $this->assertEquals("no", $result);
+
+        // Test adult
+        $tmpl = "{% if age is adult %}adult{% else %}minor{% endif %}";
+        $result = $template->render($tmpl, ['age' => 21]);
+        $this->assertEquals("adult", $result);
+
+        $result = $template->render($tmpl, ['age' => 16]);
+        $this->assertEquals("minor", $result);
+
+        // Test combining custom and built-in tests
+        $tmpl = "{% if value is defined and value is positive %}yes{% else %}no{% endif %}";
+        $result = $template->render($tmpl, ['value' => 10]);
+        $this->assertEquals("yes", $result);
+    }
 }

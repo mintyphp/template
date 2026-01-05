@@ -45,7 +45,7 @@ class Render
             $value = $expr->evaluate($data, function (string $path, array $data) {
                 /** @var array<string,mixed> $data */
                 return Helpers::resolvePath($path, $data);
-            });
+            }, $tests);
             $value = Helpers::applyFilters($value, $parts, $filters, $data);
         } catch (\Throwable $e) {
             return $escape('{% if ' . $expressionStr . '!!' . $e->getMessage() . ' %}');
