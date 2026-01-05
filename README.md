@@ -167,7 +167,7 @@ echo $template->render('<p>{{hi}}</p>',['hi' => 'Hello world']);
 - **Nested data access** with dot notation
 - **HTML escaping** by default
 - **Raw output** with `raw` filter
-- **Custom filters**
+- **Custom filters and tests**
 
 ---
 
@@ -1391,8 +1391,7 @@ Use `is not` to negate tests:
 
 ## Custom Filters
 
-Custom filters can be provided to the Template constructor. The `raw`
-filter is built-in.
+Custom filters can be provided to the Template constructor.
 
 **PHP Usage Example:**
 
@@ -1418,8 +1417,6 @@ $html = $template->render(
 ## Custom Tests
 
 Custom tests can be provided as the third argument to the Template constructor.
-Built-in tests include: `defined`, `undefined`, `null`, `even`, `odd`, `number`, 
-`string`, `iterable`, and `divisibleby(n)`.
 
 **PHP Usage Example:**
 
