@@ -217,4 +217,60 @@ class TestFunctionsTest extends TestCase
         $result = $template->render($tmpl, ['value' => 10]);
         $this->assertEquals("yes", $result);
     }
+
+    public function testCustomTestWithNot(): void
+    {
+        $customTests = [
+            'positive' => fn($value) => is_numeric($value) && $value > 0,
+            'negative' => fn($value) => is_numeric($value) && $value < 0,
+        ];
+
+        $template = new Template(null, [], $customTests);
+
+        // Test "is not" with custom test
+        $tmpl = "{% if value is not positive %}yes{% else %}no{% endif %}";
+        $result = $template->render($tmpl, ['value' => -5]);
+        $this->assertEquals("yes", $result);
+
+        $result = $template->render($tmpl, ['value' => 5]);
+        $this->assertEquals("no", $result);
+
+        // Test "is not negative"
+        $tmpl = "{% if value is not negative %}yes{% else %}no{% endif %}";
+        $result = $template->render($tmpl, ['value' => 10]);
+        $this->assertEquals("yes", $result);
+
+        $result = $template->render($tmpl, ['value' => -10]);
+        $this->assertEquals("no", $result);
+    }
+
+    public function testOverrideBuiltinTestWithCustomTest(): void
+    {
+        // Override the built-in "even" test with a custom implementation
+        // that considers only numbers divisible by 4 as "even"
+        $customTests = [
+            'even' => fn($value) => is_numeric($value) && (int)$value % 4 === 0,
+        ];
+
+        $template = new Template(null, [], $customTests);
+
+        // Test that our custom "even" test overrides the built-in one
+        $tmpl = "{% if value is even %}yes{% else %}no{% endif %}";
+
+        // 4 is divisible by 4, so it should be "even" in our custom test
+        $result = $template->render($tmpl, ['value' => 4]);
+        $this->assertEquals("yes", $result);
+
+        // 2 is divisible by 2 but not by 4, so it should NOT be "even" in our custom test
+        $result = $template->render($tmpl, ['value' => 2]);
+        $this->assertEquals("no", $result);
+
+        // 8 is divisible by 4, so it should be "even" in our custom test
+        $result = $template->render($tmpl, ['value' => 8]);
+        $this->assertEquals("yes", $result);
+
+        // 6 is divisible by 2 but not by 4, so it should NOT be "even" in our custom test
+        $result = $template->render($tmpl, ['value' => 6]);
+        $this->assertEquals("no", $result);
+    }
 }
