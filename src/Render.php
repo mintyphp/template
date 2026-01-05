@@ -15,7 +15,7 @@ class Render
      *
      * @param TreeNode $node The if node to render.
      * @param array<string,mixed> $data The data context for evaluation.
-     * @param array<string,callable> $functions Available custom functions.
+     * @param array<string,callable> $filters Available custom filters.
      * @param callable(TreeNode, array<string,mixed>, array<string,callable>): string $renderChildren Function to render children nodes.
      * @param callable(string|RawValue): string $escape Function to escape values.
      * @return string The rendered output if condition is true, empty string otherwise.
@@ -23,7 +23,7 @@ class Render
     public static function renderIfNode(
         TreeNode $node,
         array $data,
-        array $functions,
+        array $filters,
         callable $renderChildren,
         callable $escape
     ): string {
@@ -44,13 +44,13 @@ class Render
                 /** @var array<string,mixed> $data */
                 return Helpers::resolvePath($path, $data);
             });
-            $value = Helpers::applyFunctions($value, $parts, $functions, $data);
+            $value = Helpers::applyFilters($value, $parts, $filters, $data);
         } catch (\Throwable $e) {
             return $escape('{% if ' . $expressionStr . '!!' . $e->getMessage() . ' %}');
         }
         $result = '';
         if ($value) {
-            $result .= $renderChildren($node, $data, $functions);
+            $result .= $renderChildren($node, $data, $filters);
         }
         $node->value = $value;
         return $result;
@@ -65,7 +65,7 @@ class Render
      * @param TreeNode $node The elseif node to render.
      * @param array<int,TreeNode> $ifNodes Array of preceding if/elseif nodes in the chain.
      * @param array<string,mixed> $data The data context for evaluation.
-     * @param array<string,callable> $functions Available custom functions.
+     * @param array<string,callable> $filters Available custom filters.
      * @param callable(TreeNode, array<string,mixed>, array<string,callable>): string $renderChildren Function to render children nodes.
      * @param callable(string|RawValue): string $escape Function to escape values.
      * @return string The rendered output if condition is true and no previous conditions were true, empty string otherwise.
@@ -74,7 +74,7 @@ class Render
         TreeNode $node,
         array $ifNodes,
         array $data,
-        array $functions,
+        array $filters,
         callable $renderChildren,
         callable $escape
     ): string {
@@ -103,12 +103,12 @@ class Render
                     /** @var array<string,mixed> $data */
                     return Helpers::resolvePath($path, $data);
                 });
-                $value = Helpers::applyFunctions($value, $parts, $functions, $data);
+                $value = Helpers::applyFilters($value, $parts, $filters, $data);
             } catch (\Throwable $e) {
                 return $escape('{% elseif ' . $expressionStr . '!!' . $e->getMessage() . ' %}');
             }
             if ($value) {
-                $result .= $renderChildren($node, $data, $functions);
+                $result .= $renderChildren($node, $data, $filters);
             }
         }
         $node->value = $value;
@@ -123,7 +123,7 @@ class Render
      * @param TreeNode $node The else node to render.
      * @param array<int,TreeNode> $ifNodes Array of preceding if/elseif nodes in the chain.
      * @param array<string,mixed> $data The data context for rendering.
-     * @param array<string,callable> $functions Available custom functions.
+     * @param array<string,callable> $filters Available custom filters.
      * @param callable(TreeNode, array<string,mixed>, array<string,callable>): string $renderChildren Function to render children nodes.
      * @param callable(string|RawValue): string $escape Function to escape values.
      * @return string The rendered output if no previous conditions were true, empty string otherwise.
@@ -132,7 +132,7 @@ class Render
         TreeNode $node,
         array $ifNodes,
         array $data,
-        array $functions,
+        array $filters,
         callable $renderChildren,
         callable $escape
     ): string {
@@ -145,7 +145,7 @@ class Render
             $value = $value || $ifNodes[$i]->value;
         }
         if (!$value) {
-            $result .= $renderChildren($node, $data, $functions);
+            $result .= $renderChildren($node, $data, $filters);
         }
         return $result;
     }
@@ -160,7 +160,7 @@ class Render
      *
      * @param TreeNode $node The for node to render.
      * @param array<string,mixed> $data The data context for evaluation.
-     * @param array<string,callable> $functions Available custom functions.
+     * @param array<string,callable> $filters Available custom filters.
      * @param callable(TreeNode, array<string,mixed>, array<string,callable>): string $renderChildren Function to render children nodes.
      * @param callable(string|RawValue): string $escape Function to escape values.
      * @return string The concatenated rendered output for each iteration.
@@ -168,7 +168,7 @@ class Render
     public static function renderForNode(
         TreeNode $node,
         array $data,
-        array $functions,
+        array $filters,
         callable $renderChildren,
         callable $escape
     ): string {
@@ -203,7 +203,7 @@ class Render
 
         try {
             $value = Helpers::resolvePath(trim($path), $data);
-            $value = Helpers::applyFunctions($value, $parts, $functions, $data);
+            $value = Helpers::applyFilters($value, $parts, $filters, $data);
         } catch (\Throwable $e) {
             return $escape('{% for ' . $expressionStr . '!!' . $e->getMessage() . ' %}');
         }
@@ -213,7 +213,7 @@ class Render
         $result = '';
         foreach ($value as $k => $v) {
             $data = array_merge($data, $key ? [$key => $k, $var => $v] : [$var => $v]);
-            $result .= $renderChildren($node, $data, $functions);
+            $result .= $renderChildren($node, $data, $filters);
         }
         return $result;
     }
@@ -221,19 +221,19 @@ class Render
     /**
      * Renders a variable interpolation node.
      *
-     * Resolves the variable path, applies any filter functions, and escapes the result.
+     * Resolves the variable path, applies any filters, and escapes the result.
      * Variables can be simple ({{name}}) or use filters ({{name|upper}}).
      *
      * @param TreeNode $node The var node to render.
      * @param array<string,mixed> $data The data context for variable lookup.
-     * @param array<string,callable> $functions Available custom functions for filters.
+     * @param array<string,callable> $filters Available custom filters.
      * @param callable(string|RawValue): string $escape Function to escape values.
      * @return string The rendered and escaped variable value.
      */
     public static function renderVarNode(
         TreeNode $node,
         array $data,
-        array $functions,
+        array $filters,
         callable $escape
     ): string {
         if ($node->expression === null || !is_string($node->expression)) {
@@ -252,7 +252,7 @@ class Render
                 /** @var array<string,mixed> $data */
                 return Helpers::resolvePath($path, $data);
             });
-            $value = Helpers::applyFunctions($value, $parts, $functions, $data);
+            $value = Helpers::applyFilters($value, $parts, $filters, $data);
         } catch (\Throwable $e) {
             return $escape('{{' . $expressionStr . '!!' . $e->getMessage() . '}}');
         }

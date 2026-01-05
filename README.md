@@ -167,7 +167,7 @@ echo $template->render('<p>{{hi}}</p>',['hi' => 'Hello world']);
 - **Nested data access** with dot notation
 - **HTML escaping** by default
 - **Raw output** with `raw` filter
-- **Custom functions** as filters
+- **Custom filters**
 
 ---
 

@@ -15,7 +15,7 @@ class Blocks
      * @param TreeNode|null $node The extends node to render.
      * @param array<string,TreeNode> $blocks Blocks defined in the child template.
      * @param array<string,mixed> $data The data context for rendering.
-     * @param array<string,callable> $functions Available custom functions.
+     * @param array<string,callable> $filters Available custom filters.
      * @param callable(string): array<int,string> $tokenize Function to tokenize templates.
      * @param callable(array<int,string>): TreeNode $createSyntaxTree Function to create syntax trees.
      * @param callable(TreeNode, array<string,TreeNode>, array<string,mixed>, array<string,callable>): string $renderChildrenWithBlocks Function to render with blocks.
@@ -27,7 +27,7 @@ class Blocks
         ?TreeNode $node,
         array $blocks,
         array $data,
-        array $functions,
+        array $filters,
         callable $tokenize,
         callable $createSyntaxTree,
         callable $renderChildrenWithBlocks,
@@ -61,7 +61,7 @@ class Blocks
             $tree = $createSyntaxTree($tokens);
 
             // Render parent with block overrides
-            return $renderChildrenWithBlocks($tree, $blocks, $data, $functions);
+            return $renderChildrenWithBlocks($tree, $blocks, $data, $filters);
         } catch (\Throwable $e) {
             return $escape('{% extends "' . $templateName . '" !!' . $e->getMessage() . ' %}');
         }
@@ -76,7 +76,7 @@ class Blocks
      * @param TreeNode $node The block node to render.
      * @param array<string,TreeNode> $blockOverrides Override blocks from child template.
      * @param array<string,mixed> $data The data context for rendering.
-     * @param array<string,callable> $functions Available custom functions.
+     * @param array<string,callable> $filters Available custom filters.
      * @param callable(TreeNode, array<string,mixed>, array<string,callable>): string $renderChildren Function to render children nodes.
      * @param callable(TreeNode, array<string,TreeNode>, array<string,mixed>, array<string,callable>): string $renderChildrenWithBlocks Function to render with blocks.
      * @param callable(string|RawValue): string $escape Function to escape values.
@@ -86,7 +86,7 @@ class Blocks
         TreeNode $node,
         array $blockOverrides,
         array $data,
-        array $functions,
+        array $filters,
         callable $renderChildren,
         callable $renderChildrenWithBlocks,
         callable $escape
@@ -99,11 +99,11 @@ class Blocks
 
         // If we have an override for this block, use it
         if (isset($blockOverrides[$blockName])) {
-            return $renderChildren($blockOverrides[$blockName], $data, $functions);
+            return $renderChildren($blockOverrides[$blockName], $data, $filters);
         }
 
         // Otherwise render the default content, but pass blockOverrides for nested blocks
-        return $renderChildrenWithBlocks($node, $blockOverrides, $data, $functions);
+        return $renderChildrenWithBlocks($node, $blockOverrides, $data, $filters);
     }
 
     /**
@@ -113,7 +113,7 @@ class Blocks
      *
      * @param TreeNode $node The include node to render.
      * @param array<string,mixed> $data The data context for rendering.
-     * @param array<string,callable> $functions Available custom functions.
+     * @param array<string,callable> $filters Available custom filters.
      * @param callable(string): array<int,string> $tokenize Function to tokenize templates.
      * @param callable(array<int,string>): TreeNode $createSyntaxTree Function to create syntax trees.
      * @param callable(TreeNode, array<string,mixed>, array<string,callable>): string $renderChildren Function to render children nodes.
@@ -124,7 +124,7 @@ class Blocks
     public static function renderIncludeNode(
         TreeNode $node,
         array $data,
-        array $functions,
+        array $filters,
         callable $tokenize,
         callable $createSyntaxTree,
         callable $renderChildren,
@@ -157,7 +157,7 @@ class Blocks
             $tokens = $tokenize($includedTemplate);
             $tree = $createSyntaxTree($tokens);
 
-            return $renderChildren($tree, $data, $functions);
+            return $renderChildren($tree, $data, $filters);
         } catch (\Throwable $e) {
             return $escape('{% include "' . $templateName . '" !!' . $e->getMessage() . ' %}');
         }

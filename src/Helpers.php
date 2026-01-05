@@ -86,25 +86,25 @@ class Helpers
     }
 
     /**
-     * Applies a chain of filter functions to a value.
+     * Applies a chain of filters to a value.
      *
-     * Functions are applied in order, with each function receiving the output of the previous.
-     * Function arguments can be literals (strings in quotes, numbers) or paths to data.
+     * Filters are applied in order, with each filter receiving the output of the previous.
+     * Filter arguments can be literals (strings in quotes, numbers) or paths to data.
      * Example: {{name|upper|substr(0,10)}}
      *
      * @param mixed $value The initial value to transform.
-     * @param array<int,string> $parts Array of function calls to apply (e.g., ['upper', 'substr(0,10)']).
-     * @param array<string,callable> $functions Available custom functions.
+     * @param array<int,string> $parts Array of filter calls to apply (e.g., ['upper', 'substr(0,10)']).
+     * @param array<string,callable> $filters Available custom filters.
      * @param array<string,mixed> $data The data context for resolving argument paths.
-     * @return mixed The final transformed value after applying all functions.
-     * @throws \RuntimeException If a referenced function is not found.
+     * @return mixed The final transformed value after applying all filters.
+     * @throws \RuntimeException If a referenced filter is not found.
      */
-    public static function applyFunctions(mixed $value, array $parts, array $functions, array $data): mixed
+    public static function applyFilters(mixed $value, array $parts, array $filters, array $data): mixed
     {
         foreach ($parts as $part) {
-            $function = self::explode('(', rtrim($part, ')'), 2);
-            $f = $function[0];
-            $arguments = isset($function[1]) ? self::explode(',', $function[1]) : [];
+            $filter = self::explode('(', rtrim($part, ')'), 2);
+            $f = $filter[0];
+            $arguments = isset($filter[1]) ? self::explode(',', $filter[1]) : [];
             $arguments = array_map(function ($argument) use ($data) {
                 $argument = trim($argument);
                 $len = strlen($argument);
@@ -124,10 +124,10 @@ class Helpers
                 return $argument;
             }, $arguments);
             array_unshift($arguments, $value);
-            if (isset($functions[$f])) {
-                $value = call_user_func_array($functions[$f], $arguments);
+            if (isset($filters[$f])) {
+                $value = call_user_func_array($filters[$f], $arguments);
             } else {
-                throw new TemplateError("function `$f` not found");
+                throw new TemplateError("filter `$f` not found");
             }
         }
         return $value;

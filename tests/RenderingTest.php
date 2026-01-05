@@ -27,7 +27,7 @@ class RenderingTest extends TestCase
 
     public function testRenderWithMissingFunction(): void
     {
-        $this->assertEquals("hello {{name|failure!!function `failure` not found}}", self::$template->render('hello {{ name|failure }}', ['name' => 'world'], ['capitalize' => 'ucfirst']));
+        $this->assertEquals("hello {{name|failure!!filter `failure` not found}}", self::$template->render('hello {{ name|failure }}', ['name' => 'world'], ['capitalize' => 'ucfirst']));
     }
 
     public function testRenderWithFunctionLiteralArgument(): void
