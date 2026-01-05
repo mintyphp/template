@@ -1,5 +1,8 @@
 {
     "name": "mintyphp/template",
+    "type": "library",
+    "description": "Simple yet powerful Jinja-like templating system for HTML written in PHP",
+    "keywords": ["templating"],
     "license": "MIT",
     "authors": [
         {
