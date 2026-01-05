@@ -1424,20 +1424,18 @@ Built-in tests include: `defined`, `undefined`, `null`, `even`, `odd`, `number`,
 **PHP Usage Example:**
 
 ```php
-$data = ['score' => 85, 'age' => 21];
+$data = ['age' => 21];
 
 $tests = [
-    'positive' => fn($value) => is_numeric($value) && $value > 0,
-    'negative' => fn($value) => is_numeric($value) && $value < 0,
     'adult' => fn($age) => is_numeric($age) && $age >= 18
 ];
 
 $template = new Template(null, null, $tests);
 $html = $template->render(
-    '{% if score is positive %}Pass{% endif %} {% if age is adult %}Adult{% endif %}',
+    '{% if age is adult %}You are an adult{% else %}You are a minor{% endif %}',
     $data
 );
-// Output: Pass Adult
+// Output: Adult
 ```
 
 ---
