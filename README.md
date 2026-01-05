@@ -22,6 +22,16 @@ Add a dependency with Composer:
 composer require mintyphp/template
 ```
 
+## Usage
+
+```php
+use MintyPHP\Template\Template;
+
+$template = new Template();
+echo $template->render('<p>{{hi}}</p>',['hi' => 'Hello world']);
+// Outputs: <p>Hello world!</p>
+```
+
 ## BNF Syntax
 
 ```bnf
