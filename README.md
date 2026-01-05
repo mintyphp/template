@@ -1305,7 +1305,7 @@ Tests allow you to check properties of values using the `is` keyword in expressi
 ### Available Tests
 
 #### `defined`
-Check if variable is defined (not null).
+Check if variable is defined.
 ```
 {% if user is defined %}
     User exists: {{ user }}
@@ -1313,7 +1313,7 @@ Check if variable is defined (not null).
 ```
 
 #### `undefined`
-Check if variable is undefined (null).
+Check if variable is undefined.
 ```
 {% if missing is undefined %}
     Variable not defined

@@ -24,6 +24,11 @@ class TestFunctionsTest extends TestCase
         $tmpl = "{% if missing is defined %}yes{% else %}no{% endif %}";
         $result = self::$template->render($tmpl, []);
         $this->assertEquals("no", $result);
+
+        // Test variable set to null
+        $tmpl = "{% if variable is defined %}yes{% else %}no{% endif %}";
+        $result = self::$template->render($tmpl, ['variable' => null]);
+        $this->assertEquals("yes", $result);
     }
 
     public function testIsUndefined(): void
@@ -35,6 +40,11 @@ class TestFunctionsTest extends TestCase
         // Test defined variable
         $tmpl = "{% if variable is undefined %}yes{% else %}no{% endif %}";
         $result = self::$template->render($tmpl, ['variable' => 'value']);
+        $this->assertEquals("no", $result);
+
+        // Test variable set to null
+        $tmpl = "{% if variable is undefined %}yes{% else %}no{% endif %}";
+        $result = self::$template->render($tmpl, ['variable' => null]);
         $this->assertEquals("no", $result);
     }
 

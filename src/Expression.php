@@ -315,8 +315,8 @@ class Expression
                         try {
                             $stack[] = $resolvePath($token->value, $data);
                         } catch (\Throwable $e) {
-                            // For 'is defined' / 'is undefined' tests, undefined variables should be null
-                            $stack[] = null;
+                            // For 'is defined' / 'is undefined' tests, mark truly undefined variables
+                            $stack[] = ['__undefined' => true];
                         }
                     } else {
                         $stack[] = $resolvePath($token->value, $data);
@@ -455,8 +455,8 @@ class Expression
 
         // Apply the test
         $result = match ($testName) {
-            'defined' => $value !== null,
-            'undefined' => $value === null,
+            'defined' => !(is_array($value) && isset($value['__undefined'])),
+            'undefined' => is_array($value) && isset($value['__undefined']),
             'null' => $value === null,
             'even' => is_numeric($value) && (int)$value % 2 === 0,
             'odd' => is_numeric($value) && (int)$value % 2 !== 0,
